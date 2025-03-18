@@ -1,10 +1,12 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
-const { logger } = require('./middlewares/logger');
-const { home } = require('./controllers/homeController');
-const { listBlogs, createBlog, getBlog, updateBlog, deleteBlog } = require('./controllers/blogController');
 
-const port = 3000;
+const { logger } = require('./middlewares/logger');
+
+const { home } = require('./controllers/homeController');
+
+const blogsRoute = require('./routes/blogs');
 
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
@@ -12,13 +14,10 @@ app.use(express.urlencoded({extended : true}));
 app.use(logger);
 
 app.get('/', home);
+app.use('/blogs', blogsRoute);
 
-app.get("/blogs", listBlogs);
-app.post('/blogs', createBlog);
-app.get('/blogs/:blog', getBlog);
-app.put('/blogs/:blog', updateBlog);
-app.delete('/blogs/:blog', deleteBlog);
+const PORT = process.env.PORT || 3000;
 
-app.listen(port, () => {
-    console.log(`Server http://localhost:${port}`);
+app.listen(PORT, () => {
+    console.log(`Server http://localhost:${PORT}`);
 });
