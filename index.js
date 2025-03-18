@@ -2,19 +2,12 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 
-const { logger } = require('./middlewares/logger');
-
-const { home } = require('./controllers/homeController');
-
-const blogsRoute = require('./routes/blogs');
-
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
 
-app.use(logger);
+const appRoutes = require("./routes/route.js");
 
-app.get('/', home);
-app.use('/blogs', blogsRoute);
+app.use(appRoutes);
 
 const PORT = process.env.PORT || 3000;
 
