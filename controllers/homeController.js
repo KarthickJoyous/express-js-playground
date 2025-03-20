@@ -1,5 +1,5 @@
 const home = (req, res) => {
-    res.send({
+    return res.send({
         success: true,
         message: "Welcome to blogs",
         data: {}

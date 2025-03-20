@@ -3,7 +3,7 @@ const tokenValidator = (req, res, next) => {
     console.log(`Header Token : ${req.headers.token}`);
     
     if(! req.headers.token) {
-        res
+        return res
         .status(401)
         .send({
             success: false,

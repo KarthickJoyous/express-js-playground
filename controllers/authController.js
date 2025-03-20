@@ -1,5 +1,5 @@
 const register = (req, res) => {
-    res.send({
+    return res.send({
         success: true,
         message: 'Registration Success.',
         data: {
@@ -12,7 +12,7 @@ const register = (req, res) => {
 };
 
 const login = (req, res) => {
-    res.send({
+    return res.send({
         success: true,
         message: 'Login Success.',
         data: {

@@ -1,5 +1,5 @@
 const me = (req, res) => {
-    res.send({
+    return res.send({
         success: true,
         message: '',
         data: {
@@ -12,7 +12,7 @@ const me = (req, res) => {
 };
 
 const logout = (req, res) => {
-    res.send({
+    return res.send({
         success: true,
         message: 'Logout Success.',
         data: {}

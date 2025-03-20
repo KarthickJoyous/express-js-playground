@@ -1,5 +1,5 @@
 const listBlogs = (req, res) => {
-    res.send({
+    return res.send({
         success: true,
         message : "Blogs Fetched.",
         data: {
@@ -9,7 +9,7 @@ const listBlogs = (req, res) => {
 }
 
 const createBlog = (req, res) => {
-    res.send({
+    return res.send({
         success: true,
         message: "Blog Created.",
         data: {
@@ -22,7 +22,7 @@ const createBlog = (req, res) => {
 }
 
 const getBlog = (req, res) => {
-    res.send({
+    return res.send({
         success: true,
         message: "Blog Fetched.",
         data: {
@@ -32,7 +32,7 @@ const getBlog = (req, res) => {
 }
 
 const updateBlog = (req, res) => {
-    res.send({
+    return res.send({
         success: true,
         message: "Blog Updated",
         data: {
@@ -42,7 +42,7 @@ const updateBlog = (req, res) => {
 }
 
 const deleteBlog = (req, res) => {
-    res.send({
+    return res.send({
         success: true,
         message: "Blog Deleted.",
         data: {
