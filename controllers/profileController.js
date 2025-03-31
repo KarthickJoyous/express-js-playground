@@ -1,12 +1,12 @@
-const me = (req, res) => {
+const { getUserByEmail } = require('../helpers/userHelper');
+
+const me = async (req, res) => {
+
     return res.send({
         success: true,
         message: '',
         data: {
-            user: {
-                name: req.query.name,
-                email: req.query.email
-            }
+            user: await getUserByEmail(req.user.email)
         }
     });
 };

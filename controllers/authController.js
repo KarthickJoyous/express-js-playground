@@ -1,5 +1,7 @@
 const db = require('../config/db');
 const hash = require('../helpers/hash');
+const { generateToken } = require('../helpers/jwt');
+const { getUserByEmail } = require('../helpers/userHelper');
 
 const register = async (req, res) => {
 
@@ -21,14 +23,14 @@ const register = async (req, res) => {
             throw new Error('Registration failed. Please try again.');
         }
 
+        const registeredUser = await getUserByEmail(email);
+
         return res.send({
             success: true,
             message: 'Registration Success.',
             data: {
-                user: {
-                    name,
-                    email
-                }
+                user: registeredUser,
+                token: generateToken({ id: registeredUser.id, email })
             }
         });
 
@@ -46,34 +48,32 @@ const login = async (req, res) => {
 
     try {
 
-        const {email, password} = req.body;
+        const { email, password } = req.body;
 
-        const [user] = await db.query(`select name, password from users where email = '${email}' limit 1`);
+        const [user] = await db.query(`select id, name, password from users where email = '${email}' limit 1`);
 
         const hashedPassword = user[0]?.password;
 
-        if(! hashedPassword) {
+        if (!hashedPassword) {
             throw new Error("Invalid email");
         }
 
-        console.log(hashedPassword);
-
-        if(! hash.check(password, hashedPassword)) {
+        if (!hash.check(password, hashedPassword)) {
             throw new Error("Password incorrect");
         }
+
+        const loggedInUser = await getUserByEmail(email);
 
         return res.send({
             success: true,
             message: 'Login Success.',
             data: {
-                user: {
-                    name: user[0]?.name,
-                    email,
-                }
+                user: loggedInUser,
+                token: generateToken({ id: loggedInUser.id, email })
             }
         });
 
-    } catch(err) {
+    } catch (err) {
         return res.send({
             success: false,
             message: err.message,
