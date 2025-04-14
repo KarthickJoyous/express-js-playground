@@ -1,4 +1,4 @@
-const { body } = require('express-validator');
+const { body, query } = require('express-validator');
 
 const validator = (validations) => {
 
@@ -27,7 +27,13 @@ const required = (field) => {
     return body(field).notEmpty().withMessage(`The ${field} field is required`);
 }
 
+const queryRequired = (field) => {
+
+    return query(field).notEmpty().withMessage(`The ${field} field is required`);
+}
+
 module.exports = {
     validator,
-    required
+    required,
+    queryRequired
 };

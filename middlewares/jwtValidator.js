@@ -8,8 +8,6 @@ const jwtValidator = (req, res, next) => {
 
         const token = authHeader && authHeader.split(' ')[1];
 
-        console.log(`Bearer : ${token}`);
-
         if (!token) {
             throw new Error('Unauthorized');
         }
