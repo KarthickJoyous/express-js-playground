@@ -1,25 +1,26 @@
-const db = require('../config/db');
+const { User } = require('../models');
 
-const getUserByEmail = async (email) => {
+const getUserByEmail = async (email, attributes, validateExistence = false) => {
 
-    const [result] = await db.query(`select id, name, email from users where email = '${email}'`);
+    const user = await User.findOne({
+        attributes,
+        where: { email }
+    });
 
-    const user = result[0];
-
-    if (!user) {
+    if (validateExistence && !user) {
         throw new Error('User not found');
     }
 
     return user;
 };
 
-const getUserById = async (id) => {
+const getUserById = async (id, attributes, validateExistence) => {
 
-    const [result] = await db.query(`select id, name, email from users where id = '${id}'`);
+    const user = await User.findByPk(id, {
+        attributes
+    });
 
-    const user = result[0];
-
-    if (!user) {
+    if (validateExistence && !user) {
         throw new Error('User not found');
     }
 

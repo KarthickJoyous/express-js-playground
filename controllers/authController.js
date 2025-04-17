@@ -1,46 +1,42 @@
-const db = require('../config/db');
+const { User } = require('../models');
 const hash = require('../helpers/hash');
 const { generateToken } = require('../helpers/jwt');
 const { getUserByEmail } = require('../helpers/userHelper');
+const { success, error } = require('../helpers/response');
+const UserResource = require('../resources/user');
 
 const register = async (req, res) => {
 
     try {
 
-        const { email } = req.body;
+        const { name, email, password } = req.body;
 
-        const [emailExists] = await db.query(`select id from users where email = '${email}' limit 1`);
+        const userExists = await getUserByEmail(email, [
+            'id'
+        ]);
 
-        if (emailExists[0]?.id) {
+        if (userExists) {
             throw new Error(`Email (${email}) already exists`);
         }
 
-        const { name, password } = req.body;
+        const user = await User.create({
+            name,
+            email,
+            password: `${hash.make(password)}`
+        });
 
-        const [user] = await db.query(`insert into users (name, email, password) values ('${name}', '${email}', '${hash.make(password)}')`);
-
-        if (!user.affectedRows) {
+        if (!user) {
             throw new Error('Registration failed. Please try again.');
         }
 
-        const registeredUser = await getUserByEmail(email);
-
-        return res.send({
-            success: true,
-            message: 'Registration Success.',
-            data: {
-                user: registeredUser,
-                token: generateToken({ id: registeredUser.id, email })
-            }
-        });
+        return res.send(success('Registration Success.', '', {
+            user: UserResource.make(user),
+            token: generateToken({ id: user.id, email })
+        }));
 
     } catch (err) {
 
-        return res.send({
-            success: false,
-            message: err.message,
-            data: {}
-        });
+        return res.send(error(err.message, 500));
     }
 };
 
@@ -50,35 +46,19 @@ const login = async (req, res) => {
 
         const { email, password } = req.body;
 
-        const [user] = await db.query(`select id, name, password from users where email = '${email}' limit 1`);
+        const user = await getUserByEmail(email, null, true);
 
-        const hashedPassword = user[0]?.password;
-
-        if (!hashedPassword) {
-            throw new Error("Invalid email");
-        }
-
-        if (!hash.check(password, hashedPassword)) {
+        if (!hash.check(password, user.password)) {
             throw new Error("Password incorrect");
         }
 
-        const loggedInUser = await getUserByEmail(email);
-
-        return res.send({
-            success: true,
-            message: 'Login Success.',
-            data: {
-                user: loggedInUser,
-                token: generateToken({ id: loggedInUser.id, email })
-            }
-        });
+        return res.send(success('Login Success.', '', {
+            user: UserResource.make(user),
+            token: generateToken({ id: user.id, email })
+        }));
 
     } catch (err) {
-        return res.send({
-            success: false,
-            message: err.message,
-            data: {}
-        });
+        return res.send(error(err.message, 500));
     }
 };
 
